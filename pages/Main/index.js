@@ -14,7 +14,8 @@ import {
     Name,
     Bio,
     ProfileButton,
-    ProfileButtonText
+    ProfileButtonText,
+    TextVazio
 } from "./styles";
 import api from "../../services/api";
 
@@ -46,17 +47,21 @@ export default function Main(props) {
     }
 
     function handleDelete(user) {
-        const index = users.indexOf(user);
+        const data = users.filter(u => u.login !== user.login);
 
-        const newUsers = users.splice(index, 1);
+        setUsers(data);
 
-        setUsers(newUsers);
+        alert(`${user.name} excluído.`);
     }
 
     async function handleAddUser() {
         setLoading(true);
 
-        const response = await api.get(`/users/${newUser}`);
+        try {
+            const response = await api.get(`/users/${newUser}`);
+        } catch (error) {
+            console.tron.log(error);
+        }
 
         const data = {
             name: response.data.name,
@@ -67,7 +72,6 @@ export default function Main(props) {
 
         setUsers([...users, data]);
         setNewUser("");
-        setLoading(false);
 
         Keyboard.dismiss();
     }
@@ -94,31 +98,35 @@ export default function Main(props) {
                     </SubmitButton>
                 </Form>
 
-                <List
-                    data={users}
-                    keyExtractor={user => user.login}
-                    renderItem={({ item }) => (
-                        <User>
-                            <Avatar source={{ uri: item.avatar }} />
-                            <Name>{item.name}</Name>
-                            <Bio>{item.bio}</Bio>
+                {users.length === 0 ? (
+                    <TextVazio>Vazio</TextVazio>
+                ) : (
+                    <List
+                        data={users}
+                        keyExtractor={user => user.login}
+                        renderItem={({ item }) => (
+                            <User>
+                                <Avatar source={{ uri: item.avatar }} />
+                                <Name>{item.name}</Name>
+                                <Bio>{item.bio}</Bio>
 
-                            <ProfileButton
-                                onPress={() => handleNavigation(item)}
-                            >
-                                <ProfileButtonText>
-                                    Ver Perfil
-                                </ProfileButtonText>
-                            </ProfileButton>
-                            <Icon
-                                name="delete"
-                                size={28}
-                                color="#999"
-                                onPress={() => handleDelete(item)}
-                            />
-                        </User>
-                    )}
-                />
+                                <ProfileButton
+                                    onPress={() => handleNavigation(item)}
+                                >
+                                    <ProfileButtonText>
+                                        Ver Perfil
+                                    </ProfileButtonText>
+                                </ProfileButton>
+                                <Icon
+                                    name="delete"
+                                    size={28}
+                                    color="#999"
+                                    onPress={() => handleDelete(item)}
+                                />
+                            </User>
+                        )}
+                    />
+                )}
             </Container>
         </>
     );

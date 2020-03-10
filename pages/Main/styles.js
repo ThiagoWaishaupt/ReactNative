@@ -91,3 +91,11 @@ export const ProfileButtonText = styled.Text`
     font-weight: bold;
     text-transform: uppercase;
 `;
+
+export const TextVazio = styled.Text`
+    font-size: 20px;
+    text-transform: lowercase;
+    color: silver;
+    text-align: center;
+    margin-top: 70%;
+`;
